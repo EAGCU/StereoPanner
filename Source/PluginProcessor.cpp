@@ -23,15 +23,9 @@ StereoPannerAudioProcessor::StereoPannerAudioProcessor()
 #endif
 {
     // Adds the threshold parameter to the AudioProcessor 
-    // TODO - does the 'new' keyword here give us a memory leak?
     panPosition = new juce::AudioParameterFloat("panPosition", "Pan Position", - 1.0f, 1.0f, 0.0f);
     addParameter(panPosition); 
-
-    // If it does (and I currently think it does), using make_unique would be a better solution
-    // as it would not require the programmer to destroy the object after use, preventing memory leaks
-    //panPosition = std::make_unique<juce::AudioParameterFloat>("panPosition", "Pan Position", -1.0f, 1.0f, 0.0f);
-    //addParameter(panPosition.get()); // need a 'get()' in here like the above?
- 
+     
 }
 
 StereoPannerAudioProcessor::~StereoPannerAudioProcessor()
