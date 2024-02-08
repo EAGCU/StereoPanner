@@ -151,14 +151,12 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-
+    // retrieve user paning algorithm choice
+    int panChoice = algorithmChoice->getIndex();
 
     // two new variables to store our new pDash values, depending on algorithm choice
     float gainL = 0.0f;
     float gainR = 0.0f;
-
-    // retrieve user paning algorithm choice
-    int panChoice = algorithmChoice->getIndex();
 
     // using the panChoice variable, we'll select the algorithm
     if (panChoice == 0) // if 0, select Linear
