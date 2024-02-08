@@ -26,6 +26,9 @@ StereoPannerAudioProcessor::StereoPannerAudioProcessor()
     panPosition = new juce::AudioParameterFloat("panPosition", "Pan Position", - 1.0f, 1.0f, 0.0f);
     addParameter(panPosition); 
      
+    // adds new algorithm choice parameter
+    algorithmChoice = new juce::AudioParameterChoice("algorithmChoice", "Choose panning", { "Linear", "Constant" }, 0);
+    addParameter(algorithmChoice);
 }
 
 StereoPannerAudioProcessor::~StereoPannerAudioProcessor()
@@ -148,8 +151,29 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // calculate p'
-    float pDash = (panPosition->get() + 1.0f) / 2.0f;
+
+
+    // two new variables to store our new pDash values, depending on algorithm choice
+    float gainL = 0.0f;
+    float gainR = 0.0f;
+
+    // retrieve user paning algorithm choice
+    int panChoice = algorithmChoice->getIndex();
+
+    // using the panChoice variable, we'll select the algorithm
+    if (panChoice == 0) // if 0, select Linear
+    {
+        float pDash = (panPosition->get() + 1.0f) / 2.0f;
+        gainL = (1.0 - pDash);
+        gainR = pDash;
+    }
+    else // if not 0, select constant power.  
+    {
+        float pDash = juce::MathConstants<float>::pi * (panPosition->get() + 1.0f) / 4.0f;
+        gainL = cos(pDash);
+        gainR = sin(pDash);
+    }
+
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -158,16 +182,16 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     {
         auto* channelData = buffer.getWritePointer (channel);
 
-        // linear panning
+        // panning
         for (int i = 0; i < buffer.getNumSamples(); i++)
         {
             if (channel == 0) // Left Channel
             {
-                channelData[i] = channelData[i] * (1.0 - pDash);
+                channelData[i] = channelData[i] * gainL;
             }
-            else // right or any other channel
+            else // right (...or any other channel)
             {
-                channelData[i] = channelData[i] * pDash;
+                channelData[i] = channelData[i] * gainR;
             }
 
         }
