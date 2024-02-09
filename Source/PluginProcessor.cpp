@@ -152,9 +152,9 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.clear (i, 0, buffer.getNumSamples());
 
     // retrieve user paning algorithm choice
-    int panChoice = algorithmChoice->getIndex();
+    auto panChoice = algorithmChoice->getIndex();
 
-    // two new variables to store our new pDash values, depending on algorithm choice
+    // two new variables to store our  pDash values, depending on algorithm choice
     float gainL = 0.0f;
     float gainR = 0.0f;
 
@@ -171,7 +171,6 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         gainL = cos(pDash);
         gainR = sin(pDash);
     }
-
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
