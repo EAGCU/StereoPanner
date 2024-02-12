@@ -155,8 +155,8 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto panChoice = algorithmChoice->getIndex();
 
     // two new variables to store our  pDash values, depending on algorithm choice
-    float gainL = 0.0f;
-    float gainR = 0.0f;
+    float gainL;
+    float gainR;
 
     // using the panChoice variable, we'll select the algorithm
     if (panChoice == 0) // if 0, select Linear
@@ -172,14 +172,13 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         gainR = sin(pDash);
     }
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    
+    // we've now set the multipliers (gainL/gainR), so all that remains 
+    //  to do is multiply each channel by these values.    
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
 
-        // panning
+        // panning algorithm
         for (int i = 0; i < buffer.getNumSamples(); i++)
         {
             if (channel == 0) // Left Channel
@@ -190,7 +189,6 @@ void StereoPannerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             {
                 channelData[i] = channelData[i] * gainR;
             }
-
         }
     }
 }
